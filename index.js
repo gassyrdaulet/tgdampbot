@@ -677,6 +677,7 @@ const start = async () => {
           });
         return;
       } else if (text === "ВЫЙТИ 🚪" && !msg.reply_to_message) {
+        await deletePaginationMessage(chatId);
         await bot.sendMessage(
           chatId,
           "Вы действительно хотите выйти из аккаунта?",
@@ -747,6 +748,7 @@ const start = async () => {
 
     if (data === "logout") {
       try {
+        await deletePaginationMessage(chatId);
         await bot.deleteMessage(chatId, msg.message.message_id);
       } catch (e) {
         return;
