@@ -55,7 +55,28 @@ const authorizedMenu = [
 const removeReplyListener = (id) => {
   bot.removeReplyListener(id);
 };
-
+const deletePaginationMessage = async (chatId) => {
+  if (localStorage[chatId]) {
+    if (localStorage[chatId].newprice) {
+      try {
+        await bot.deleteMessage(
+          chatId,
+          localStorage[chatId].newprice_message_id
+        );
+      } catch (e) {
+        console.log;
+      }
+      delete localStorage[chatId].newprice;
+    }
+    if (localStorage[chatId].page || localStorage[chatId.total]) {
+      try {
+        await bot.deleteMessage(chatId, localStorage[chatId].pricespageid);
+      } catch (e) {
+        console.log;
+      }
+    }
+  }
+};
 const start = async () => {
   {
     bot.on("message", async (msg) => {
@@ -103,29 +124,7 @@ const start = async () => {
         return;
       }
       if (text === "/menu" && !msg.reply_to_message) {
-        if (localStorage[chatId]) {
-          if (localStorage[chatId].newprice) {
-            try {
-              await bot.deleteMessage(
-                chatId,
-                localStorage[chatId].newprice_message_id
-              );
-            } catch (e) {
-              console.log;
-            }
-            delete localStorage[chatId].newprice;
-          }
-          if (localStorage[chatId].page || localStorage[chatId.total]) {
-            try {
-              await bot.deleteMessage(
-                chatId,
-                localStorage[chatId].pricespageid
-              );
-            } catch (e) {
-              console.log;
-            }
-          }
-        }
+        await deletePaginationMessage(chatId);
         await bot.sendMessage(
           chatId,
           "Вы находитесь в Главном меню:",
@@ -142,29 +141,7 @@ const start = async () => {
         );
         return;
       } else if (text === "Все прайсы 📋" && !msg.reply_to_message) {
-        if (localStorage[chatId]) {
-          if (localStorage[chatId].newprice) {
-            try {
-              await bot.deleteMessage(
-                chatId,
-                localStorage[chatId].newprice_message_id
-              );
-            } catch (e) {
-              console.log;
-            }
-            delete localStorage[chatId].newprice;
-          }
-          if (localStorage[chatId].page || localStorage[chatId.total]) {
-            try {
-              await bot.deleteMessage(
-                chatId,
-                localStorage[chatId].pricespageid
-              );
-            } catch (e) {
-              console.log;
-            }
-          }
-        }
+        await deletePaginationMessage(chatId);
         const tablename = await getTableName(msg.from.id);
         const { finalmsg, total } = await paginatePrices(0, 10, tablename);
         localStorage[chatId] = { page: 1, total };
@@ -185,6 +162,7 @@ const start = async () => {
           });
         return;
       } else if (text === "Поиск прайса 🔍" && !msg.reply_to_message) {
+        await deletePaginationMessage(chatId);
         await bot
           .sendMessage(chatId, "Введите пожалуйста модель или SKU:", {
             ...forceReplyForCreateNewPrice,
@@ -212,6 +190,7 @@ const start = async () => {
           });
         return;
       } else if (text === "Добавить прайс ➕" && !msg.reply_to_message) {
+        await deletePaginationMessage(chatId);
         const newprice = {};
         await bot
           .sendMessage(chatId, "Введите идентификатор прайса: (только цифры)", {
@@ -500,6 +479,7 @@ const start = async () => {
             );
           });
       } else if (text === "Удалить прайс 🗑️" && !msg.reply_to_message) {
+        await deletePaginationMessage(chatId);
         await bot
           .sendMessage(
             chatId,
@@ -561,6 +541,7 @@ const start = async () => {
           });
         return;
       } else if (text === "Редактировать прайс ✏️" && !msg.reply_to_message) {
+        await deletePaginationMessage(chatId);
         await bot
           .sendMessage(
             chatId,
@@ -654,6 +635,7 @@ const start = async () => {
           });
         return;
       } else if (text === "Помощь ℹ️" && !msg.reply_to_message) {
+        await deletePaginationMessage(chatId);
         await bot.sendSticker(chatId, Stickers.keyBoyBeingTongue);
         await bot
           .sendMessage(chatId, "Загрузка...", {
@@ -720,6 +702,7 @@ const start = async () => {
     const data = msg.data;
     const chatId = msg.message.chat.id;
     if (data === "login") {
+      await deletePaginationMessage(chatId);
       try {
         await bot.deleteMessage(chatId, msg.message.message_id);
       } catch (e) {
@@ -752,6 +735,7 @@ const start = async () => {
     const isAuth = await checkForAuth(msg.from.id);
     if (!isAuth) {
       if (data === "empty") {
+        await deletePaginationMessage(chatId);
         data;
         await bot.answerCallbackQuery(msg.id, { text: "empty" });
         return;
