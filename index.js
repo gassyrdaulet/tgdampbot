@@ -85,6 +85,7 @@ const start = async () => {
       const chatId = msg.chat.id;
       const isAuth = await checkForAuth(msg.from.id);
       if (!isAuth) {
+        await deletePaginationMessage(chatId);
         bot.setMyCommands(unauthorizedMenu);
         if (msg.reply_to_message) {
           return;
