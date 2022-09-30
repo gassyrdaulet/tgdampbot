@@ -142,6 +142,29 @@ const start = async () => {
         );
         return;
       } else if (text === "Все прайсы 📋" && !msg.reply_to_message) {
+        if (localStorage[chatId]) {
+          if (localStorage[chatId].newprice) {
+            try {
+              await bot.deleteMessage(
+                chatId,
+                localStorage[chatId].newprice_message_id
+              );
+            } catch (e) {
+              console.log;
+            }
+            delete localStorage[chatId].newprice;
+          }
+          if (localStorage[chatId].page || localStorage[chatId.total]) {
+            try {
+              await bot.deleteMessage(
+                chatId,
+                localStorage[chatId].pricespageid
+              );
+            } catch (e) {
+              console.log;
+            }
+          }
+        }
         const tablename = await getTableName(msg.from.id);
         const { finalmsg, total } = await paginatePrices(0, 10, tablename);
         localStorage[chatId] = { page: 1, total };
