@@ -39,10 +39,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+const bot = new TelegramApi(TOKEN, { polling: true });
+const localStorage = {};
+const replytimeout = 20; //В секундах
+const moreinfo = 'Подробнее <a href="https://kaspi.kz">+7 (776) 829 08 79</a>';
+
 app.post("/", async (req, res) => {
   try {
     const fromId = req.body.fromId;
     const tablename = await getTableName(fromId);
+    console.log("CALLED ");
     const prices = (await conn.query(`SELECT * FROM ${tablename}`))[0];
     res.send(prices);
   } catch (e) {
@@ -52,11 +58,6 @@ app.post("/", async (req, res) => {
 app.listen(2000, () => {
   console.log("server started on port 2000!");
 });
-
-const bot = new TelegramApi(TOKEN, { polling: true });
-const localStorage = {};
-const replytimeout = 20; //В секундах
-const moreinfo = 'Подробнее <a href="https://kaspi.kz">+7 (776) 829 08 79</a>';
 
 const unauthorizedMenu = [
   { command: "/start", description: "Запустить бота" },
