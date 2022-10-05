@@ -1,5 +1,7 @@
 import TelegramApi from "node-telegram-bot-api";
 import mysql from "mysql2/promise";
+import express from "express";
+import cors from "cors";
 import {
   paginationOptions,
   mainOptions,
@@ -31,6 +33,24 @@ export const conn = mysql.createPool({
   database: "kaspi_price_list",
   port: "3306",
   password: "",
+});
+
+const app = express();
+app.use(express.json);
+app.use(cors);
+
+app.listen(2000, () => {
+  console.log("server started on port 2000!");
+});
+
+app.get("/", async (req, res) => {
+  try {
+    const tablename = await getTableName(msg.from.id);
+    const prices = (await conn.query(`SELECT * FROM ${tablename}`))[0];
+    res.send(prices);
+  } catch (e) {
+    res.status(500).json({ message: "A server error occured: " + e });
+  }
 });
 
 const bot = new TelegramApi(TOKEN, { polling: true });
