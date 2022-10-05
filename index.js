@@ -39,6 +39,7 @@ import {
 } from "./AuthService.js";
 import Stickers from "./Stickers.js";
 import { token as TOKEN } from "./Token.js";
+import { secureHeapUsed } from "crypto";
 
 export const conn = mysql.createPool({
   host: "127.0.0.1",
@@ -70,12 +71,12 @@ app.post("/", async (req, res) => {
     res.status(500).json({ message: "A server error occured: " + e });
   }
 });
-app.listen(2000, () => {
-  console.log("server started on port 2000!");
+app.listen(Port, () => {
+  console.log("server started on port " + Port);
 });
 const httpsServer = https.createServer(credentials, app);
-httpsServer.listen(sPORT, () => {
-  console.log("HTTPS server started on port " + sPORT + "...");
+httpsServer.listen(SecurePort, () => {
+  console.log("HTTPS server started on port " + SecurePort + "...");
 });
 
 const unauthorizedMenu = [
