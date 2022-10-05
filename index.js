@@ -36,21 +36,21 @@ export const conn = mysql.createPool({
 });
 
 const app = express();
-app.use(express.json);
-app.use(cors);
+app.use(express.json());
+app.use(cors());
 
-app.listen(2000, () => {
-  console.log("server started on port 2000!");
-});
-
-app.get("/", async (req, res) => {
+app.post("/", async (req, res) => {
   try {
-    const tablename = await getTableName(msg.from.id);
+    const fromId = req.body.fromId;
+    const tablename = await getTableName(fromId);
     const prices = (await conn.query(`SELECT * FROM ${tablename}`))[0];
     res.send(prices);
   } catch (e) {
     res.status(500).json({ message: "A server error occured: " + e });
   }
+});
+app.listen(2000, () => {
+  console.log("server started on port 2000!");
 });
 
 const bot = new TelegramApi(TOKEN, { polling: true });
