@@ -2,6 +2,19 @@ import TelegramApi from "node-telegram-bot-api";
 import mysql from "mysql2/promise";
 import express from "express";
 import cors from "cors";
+import fs from "fs";
+import https from "https";
+
+const privateKey = fs.readFileSync("./keys/privkey.pem", "utf8");
+const certificate = fs.readFileSync("./keys/cert.pem", "utf8");
+const ca = fs.readFileSync("./keys/chain.pem", "utf8");
+
+const credentials = {
+  key: privateKey,
+  cert: certificate,
+  ca,
+};
+
 import {
   paginationOptions,
   mainOptions,
@@ -42,6 +55,8 @@ app.use(cors());
 const bot = new TelegramApi(TOKEN, { polling: true });
 const localStorage = {};
 const replytimeout = 20; //В секундах
+const Port = 2000;
+const SecurePort = 2222;
 const moreinfo = 'Подробнее <a href="https://kaspi.kz">+7 (776) 829 08 79</a>';
 
 app.post("/", async (req, res) => {
@@ -57,6 +72,10 @@ app.post("/", async (req, res) => {
 });
 app.listen(2000, () => {
   console.log("server started on port 2000!");
+});
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(sPORT, () => {
+  console.log("HTTPS server started on port " + sPORT + "...");
 });
 
 const unauthorizedMenu = [
