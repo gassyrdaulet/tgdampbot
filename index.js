@@ -64,9 +64,48 @@ app.post("/", async (req, res) => {
   try {
     const fromId = req.body.fromId;
     const tablename = await getTableName(fromId);
-    console.log("CALLED ");
     const prices = (await conn.query(`SELECT * FROM ${tablename}`))[0];
     res.send(prices);
+  } catch (e) {
+    res.status(500).json({ message: "A server error occured: " + e });
+  }
+});
+app.get("/brands", async (req, res) => {
+  try {
+    const respond = [];
+    const searchValue = req.query.searchValue;
+    const fromId = req.query.fromId;
+    const tablename = await getTableName(fromId);
+    const sql = `SELECT DISTINCT brand FROM ${tablename}`;
+    const brands = (await conn.query(sql))[0];
+    const filteredBrands = [...brands].filter((brand) => {
+      return brand.brand.toLowerCase().includes(searchValue + "".toLowerCase());
+    });
+    filteredBrands.map((brand) =>
+      respond.push({ value: brand.brand, label: brand.brand })
+    );
+    res.send(respond);
+  } catch (e) {
+    res.status(500).json({ message: "A server error occured: " + e });
+  }
+});
+app.get("/categories", async (req, res) => {
+  try {
+    const respond = [];
+    const searchValue = req.query.searchValue;
+    const fromId = req.query.fromId;
+    const tablename = await getTableName(fromId);
+    const sql = `SELECT DISTINCT category FROM ${tablename}`;
+    const categories = (await conn.query(sql))[0];
+    const filteredCategories = [...categories].filter((category) => {
+      return category.category
+        .toLowerCase()
+        .includes(searchValue + "".toLowerCase());
+    });
+    filteredCategories.map((category) =>
+      respond.push({ value: category.category, label: category.category })
+    );
+    res.send(respond);
   } catch (e) {
     res.status(500).json({ message: "A server error occured: " + e });
   }
