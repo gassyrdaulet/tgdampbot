@@ -70,6 +70,19 @@ app.post("/", async (req, res) => {
     res.status(500).json({ message: "A server error occured: " + e });
   }
 });
+app.get("/price/:id", async (req, res) => {
+  try {
+    const id = req.query.id;
+    const fromId = req.query.fromId;
+    const tablename = await getTableName(fromId);
+    const price = (
+      await conn.query(`SELECT * FROM ${tablename} WHERE id = ${id}`)
+    )[0];
+    res.send(price);
+  } catch (e) {
+    res.status(500).json({ message: "A server error occured: " + e });
+  }
+});
 app.get("/brands", async (req, res) => {
   try {
     const respond = [];
