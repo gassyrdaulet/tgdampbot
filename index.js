@@ -72,7 +72,7 @@ app.post("/", async (req, res) => {
 });
 app.get("/price/:id", async (req, res) => {
   try {
-    const id = req.query.id;
+    const id = req.params.id;
     const fromId = req.query.fromId;
     const tablename = await getTableName(fromId);
     const price = (
